@@ -14,8 +14,8 @@ const config = {
   clientSecret: process.env.CLIENT_SECRET_VALUE,
   tenantId: process.env.TENANT_ID,
   redirectUri: process.env.REDIRECT_URI,
-  authority: 'https://login.microsoft.com',
-  scope: 'User.Read'
+  authority: 'https://login.microsoftonline.com',
+  scope: ["openid", "email", "profile"]
 };
 
 // Add session middleware
@@ -52,7 +52,7 @@ app.get('/auth', (req, res) => {
     response_type: 'code',
     redirect_uri: config.redirectUri,
     response_mode: 'query',
-    scope: config.scope,
+    scope: config.scope.join(" "),
     code_challenge: codeChallenge,
     code_challenge_method: 'S256'
   });
@@ -71,7 +71,7 @@ app.get('/auth/callback', async (req, res) => {
 
   const tokenParams = {
     client_id: config.clientId,
-    scope: config.scope,
+    scope: config.scope.join(" "),
     code,
     redirect_uri: config.redirectUri,
     grant_type: 'authorization_code',
